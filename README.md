@@ -59,7 +59,7 @@ A beautiful, full-stack todo list application built with **Go** (backend) and **
 - **Node.js 18+** and npm installed
 - Git installed
 
-### 🔧 Installation
+### 🔧 Local Development
 
 1. **Clone the repository**
    ```bash
@@ -82,6 +82,16 @@ A beautiful, full-stack todo list application built with **Go** (backend) and **
    npm run dev
    ```
    The frontend will start on `http://localhost:5173`
+
+### 🌐 Production Deployment
+
+This application is ready for deployment on Railway! See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions.
+
+**Quick Deploy to Railway:**
+1. Push your code to GitHub
+2. Connect your repository to Railway
+3. Railway will automatically detect and deploy both services
+4. Configure environment variables as specified in the deployment guide
 
 ### 🌐 Environment Variables
 

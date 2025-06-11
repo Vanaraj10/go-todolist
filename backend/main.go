@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"time"
 
 	"github.com/Vanaraj10/todoApi/config"
@@ -10,13 +11,29 @@ import (
 )
 
 func main() {
+	// Set Gin mode to release in production
+	if os.Getenv("GIN_MODE") != "debug" {
+		gin.SetMode(gin.ReleaseMode)
+	}
 
 	config.ConnectDB()
-	router := gin.Default() // Configure CORS
+	router := gin.Default() 
+	
+	// Configure CORS for production
+	allowedOrigins := []string{
+		"http://localhost:5173", 
+		"http://localhost:5174",
+	}
+	
+	// Add production frontend URL if available
+	if frontendURL := os.Getenv("FRONTEND_URL"); frontendURL != "" {
+		allowedOrigins = append(allowedOrigins, frontendURL)
+	}
+	
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:5174"}, // Allow both ports
+		AllowOrigins:     allowedOrigins,
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
-		AllowHeaders:     []string{"*"}, // Allow all headers
+		AllowHeaders:     []string{"*"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
@@ -24,6 +41,11 @@ func main() {
 	routes.AuthRoutes(router)
 	routes.TOdoRoutes(router)
 
-	router.Run(":8080")
-
+	// Use PORT from environment variable or default to 8080
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	
+	router.Run(":" + port)
 }
