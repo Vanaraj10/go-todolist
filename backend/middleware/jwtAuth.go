@@ -2,11 +2,20 @@ package middleware
 
 import (
 	"net/http"
+	"os"
 	"strings"
-	"github.com/Vanaraj10/todoApi/utils"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 )
+
+func getSecretKey() []byte {
+	secret := os.Getenv("JWT_SECRET")
+	if secret == "" {
+		secret = "my_secret" // Fallback for development
+	}
+	return []byte(secret)
+}
 
 func JWTAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -31,9 +40,8 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 		}
 
 		tokenStr := parts[1]
-
 		token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
-			return utils.SecretKey, nil
+			return getSecretKey(), nil
 		})
 
 		if err != nil || !token.Valid {

@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"log"
+	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -12,11 +13,17 @@ import (
 var DB *mongo.Client
 
 func ConnectDB() {
-	client,err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://vanaraj24cs:KKSWJsnRJ5zGTkWR@todolist.xtwasmd.mongodb.net/?retryWrites=true&w=majority&appName=TodoList"))
+	// Get MongoDB URI from environment variable or use default
+	mongoURI := os.Getenv("MONGODB_URI")
+	if mongoURI == "" {
+		mongoURI = "mongodb+srv://vanaraj24cs:KKSWJsnRJ5zGTkWR@todolist.xtwasmd.mongodb.net/?retryWrites=true&w=majority&appName=TodoList"
+	}
+
+	client, err := mongo.NewClient(options.Client().ApplyURI(mongoURI))
 	if err != nil {
 		log.Fatal(err)
 	}
-	ctx,cancel := context.WithTimeout(context.Background(),10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	err = client.Connect(ctx)
@@ -24,6 +31,7 @@ func ConnectDB() {
 		log.Fatal(err)
 	}
 	DB = client
+	log.Println("Connected to MongoDB successfully!")
 }
 
 func GetCollection(collectionName string) *mongo.Collection {

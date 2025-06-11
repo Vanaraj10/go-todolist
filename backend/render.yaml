@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: go-todolist-backend
+    env: go
+    plan: free
+    region: oregon
+    buildCommand: go mod download && go build -o main .
+    startCommand: ./main
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: GIN_MODE
+        value: release
+      - key: MONGODB_URI
+        value: mongodb+srv://vanaraj24cs:KKSWJsnRJ5zGTkWR@todolist.xtwasmd.mongodb.net/?retryWrites=true&w=majority&appName=TodoList
+      - key: FRONTEND_URL
+        value: https://your-frontend-domain.com
+      - key: JWT_SECRET
+        generateValue: true
+        
+  - type: cron
+    name: todolist-keep-alive
+    env: go
+    region: oregon
+    schedule: "*/14 * * * *"  # Every 14 minutes (to avoid exact timing conflicts)
+    buildCommand: go mod download && go build -o keep-alive ./scripts/keep-alive.go
+    startCommand: ./keep-alive
+    envVars:
+      - key: SERVICE_URL
+        # Replace with your actual service URL after deployment
+        value: https://go-todolist-backend.onrender.com
