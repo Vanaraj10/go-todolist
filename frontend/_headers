@@ -1,0 +1,35 @@
+# MIME type configuration for static files
+location ~* \.(js|mjs)$ {
+    add_header Content-Type application/javascript;
+}
+
+location ~* \.(jsx)$ {
+    add_header Content-Type application/javascript;
+}
+
+location ~* \.(ts)$ {
+    add_header Content-Type application/typescript;
+}
+
+location ~* \.(tsx)$ {
+    add_header Content-Type application/typescript;
+}
+
+location ~* \.(css)$ {
+    add_header Content-Type text/css;
+}
+
+location ~* \.(json)$ {
+    add_header Content-Type application/json;
+}
+
+# Cache static assets
+location ~* \.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$ {
+    expires 1y;
+    add_header Cache-Control "public, immutable";
+}
+
+# Handle SPA routing
+location / {
+    try_files $uri $uri/ /index.html;
+}
